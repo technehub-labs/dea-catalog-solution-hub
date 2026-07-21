@@ -1,0 +1,85 @@
+id: dea:archetype-identity-provider
+type: SolutionComponent
+name: Identity Provider Archetype
+abbreviation: IdP Archetype
+version: "1.0.0"
+status: active
+description: >
+  Canonical delivery archetype for implementing an Identity Provider (IdP). Covers
+  OIDC/OAuth2 protocol support, multi-factor authentication (MFA), session management,
+  directory integration (AD/LDAP), identity federation, and zero-trust access controls
+  for enterprise single sign-on (SSO).
+archetype_class: security
+complexity: medium
+delivery_sprints: 8
+team_size: 4-5
+
+patterns_applied:
+  - dea:pattern-api-gateway
+  - dea:pattern-zero-trust
+
+services_realised:
+  - dea:service-authentication
+  - dea:service-authorization
+
+capabilities_enabled:
+  - dea:capability-identity-management
+  - dea:capability-access-control
+  - dea:capability-federation
+
+infrastructure_requirements:
+  - IdP: Keycloak / Okta / Auth0 / Azure AD B2C
+  - MFA: TOTP / WebAuthn / SMS gateways
+  - Directory: Active Directory / LDAP / SCIM
+  - Monitoring: Audit logs, anomaly detection (SIEM integration)
+  - Certificate: ACME / Let's Encrypt for TLS
+
+delivery_phases:
+  - phase: Discovery
+    sprints: 1-2
+    focus: Identity requirements, directory audit, MFA strategy
+  - phase: Foundation
+    sprints: 3-4
+    focus: IdP setup, OIDC/OAuth2 flows, base MFA, session management
+  - phase: Build
+    sprints: 5-6
+    focus: Directory integration, federation (SAML/OIDC), role mapping
+  - phase: Harden
+    sprint: 7
+    focus: Penetration testing, zero-trust audit, compliance validation
+  - phase: Launch
+    sprint: 8
+    focus: SSO rollout, user migration, training, hypercare
+
+exit_criteria:
+  - All applications authenticated via IdP
+  - MFA adoption rate > 95%
+  - Zero-trust policy enforced across all services
+  - SOC 2 audit ready
+
+governance_checkpoints:
+  - Identity architecture review gate (end of Discovery)
+  - Security review gate (end of Foundation)
+  - Compliance gate (before Launch)
+  - SSO rollout gate (before hypercare)
+
+relationships:
+  - source_id: dea:archetype-identity-provider
+    target_id: dea:pattern-api-gateway
+    relationship_type: applies_pattern
+  - source_id: dea:archetype-identity-provider
+    target_id: dea:pattern-zero-trust
+    relationship_type: applies_pattern
+  - source_id: dea:archetype-identity-provider
+    target_id: dea:service-authentication
+    relationship_type: implements_service
+  - source_id: dea:archetype-identity-provider
+    target_id: dea:service-authorization
+    relationship_type: implements_service
+
+tags:
+  - solution-archetype
+  - security
+  - identity
+  - sso
+  - oauth2

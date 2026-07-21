@@ -1,0 +1,147 @@
+integration_guide:
+  id: ig-data-warehouse
+  name: Data Warehouse Integration Guide
+  description: >
+    Integration patterns for connecting Solution Hub archetypes to Snowflake, BigQuery,
+    and Redshift cloud data warehouses. Covers reverse ETL patterns, data vault
+    architecture, and analytics-ready data modelling for business intelligence
+    and machine learning workloads.
+  supported_systems:
+    - name: Snowflake
+      editions: [Standard, Enterprise, Business Critical]
+      integration_methods:
+        - Snowflake REST API
+        - Snowflake Connector for Python
+        - Snowflake Data Marketplace
+        - Snowpipe (continuous ingestion)
+        - External Functions (Lambda/UDF)
+    - name: BigQuery
+      editions: [Standard, Enterprise, Enterprise Plus]
+      integration_methods:
+        - BigQuery REST API
+        - BigQuery connector for Spark
+        - BigQuery Data Transfer Service
+        - Pub/Sub streaming insertion
+        - Federated queries (external tables)
+    - name: Redshift
+      editions: [Serverless, RA3, DS2]
+      integration_methods:
+        - Redshift Spectrum for external data
+        - Redshift Data API
+        - COPY command for S3 ingestion
+        - Redshift ML for in-warehouse ML
+        - Federated queries to Aurora/RDS
+
+  data_architecture_patterns:
+    - pattern: data-vault-2
+      description: >
+        Hash-based business keys, satellite tables for descriptive attributes,
+        link tables for relationships. Supports historical tracking, parallel
+        loading, and auditability for regulatory compliance.
+      applicable_scenarios: [analytics_pipeline, customer_data_platform]
+      components:
+        hubs: business keys (customer_hub, product_hub, order_hub)
+        links: relationships (customer_order_link, product_category_link)
+        satellites: descriptive attributes (customer_sat, order_sat)
+        point_in_time: transaction tracking tables
+    - pattern: star_schema
+      description: >
+        Denormalized fact and dimension tables optimized for query performance.
+        Suitable for reporting and BI use cases with predictable query patterns.
+      applicable_scenarios: [analytics_pipeline]
+      components:
+        facts: transaction_fact, inventory_fact, finance_fact
+        dimensions: customer_dim, product_dim, time_dim, location_dim
+    - pattern: lakehouse
+      description: >
+        Medallion architecture with bronze (raw), silver (curated), gold
+        (business-ready) layers. Combines data lake storage with warehouse
+        query performance.
+      applicable_scenarios: [customer_data_platform, analytics_pipeline]
+      components:
+        bronze: raw ingestion, immutable
+        silver: cleaned, deduplicated, enriched
+        gold: business aggregates, materialized views
+
+  reverse_etl_patterns:
+    - name: Operational Analytics
+      source: warehouse_aggregates
+      target: crm_operational
+      tools: [Census, Hightouch, Airbyte]
+      frequency: hourly
+      details: >
+        Aggregate metrics (LTV, churn risk, engagement score) computed in the
+        warehouse and synced back to CRM or marketing tools for operational
+        decision-making at the point of customer interaction.
+    - name: Personalization
+      source: customer_segments
+      target: cdp_profile_enrichment
+      tools: [Reverse ETL custom, Fivetran Reverse ETL]
+      frequency: near-real-time
+      details: >
+        Customer segments and behavioral clusters computed in the warehouse
+        are written back to the CDP to enrich unified customer profiles for
+        real-time personalization.
+    - name: Finance Sync
+      source: warehouse_finance_tables
+      target: erp_financial
+      tools: [Custom API, MuleSoft]
+      frequency: daily
+      details: >
+        Actuals, forecasts, and budget data from the warehouse are synced to
+        ERP systems for financial consolidation and reporting.
+
+  loading_patterns:
+    - source_archetype: customer-data-platform
+      direction: target
+      pattern: bidirectional
+      details: >
+        CDP unifies customer identity from multiple sources; the warehouse
+        receives a conformed customer dimension and related facts. The warehouse
+        can also write back derived attributes (scores, segments) to the CDP.
+    - source_archetype: analytics-pipeline
+      direction: source
+      pattern: elt
+      details: >
+        Raw data lands in the warehouse via Fivetran/Airbyte; dbt transforms
+        data through silver to gold layers; reverse ETL pushes refined data
+        back to operational systems.
+    - source_archetype: event-streaming-hub
+      direction: source
+      pattern: streaming
+      details: >
+        Kafka/Kinesis events are landed in the warehouse via Confluent or
+        Kinesis Data Firehose. Real-time aggregates are computed using
+        materialized views or streaming SQL (Snowflake Dynamic Tables,
+        BigQuery streaming inserts).
+
+  data_quality_patterns:
+    dbt_tests:
+      - not_null tests on primary keys
+      - unique tests on business keys
+      - accepted_values for status fields
+      - relationships tests for referential integrity
+      - custom tests for business rules (no negative revenue, etc.)
+    alerting:
+      slack_notifications_on_failure: true
+      dbt_cloud_jobs_on_failure: true
+    data_monitoring:
+      schema_change_detection: true
+      volume_anomaly_detection: true
+      freshness_monitoring: true
+      tools: [Monte Carlo, Databand, Great Expectations]
+
+  security_considerations:
+    data_classification: mixed
+    includes: [pii, financial, operational]
+    compliance:
+      - SOC 2 Type II required for all warehouse integrations
+      - PII must be masked in non-production environments
+      - Column-level security for sensitive data
+    authentication:
+      Snowflake: OAuth 2.0 + MFA, SCIM provisioning
+      BigQuery: Workload identity federation (preferred)
+      Redshift: IAM authentication, MFA
+    encryption:
+      at_rest: customer_managed_keys
+      in_transit: TLS 1.2 minimum

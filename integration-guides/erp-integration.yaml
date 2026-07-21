@@ -1,0 +1,123 @@
+integration_guide:
+  id: ig-erp
+  name: ERP Integration Guide
+  description: >
+    Integration patterns for connecting Solution Hub archetypes to SAP and Oracle
+    ERP systems. Covers financial data extraction, supply chain data synchronization,
+    and master data management patterns for enterprise ERP connectivity.
+  supported_systems:
+    - name: SAP
+      versions: [S/4HANA, ECC 6.0]
+      integration_methods:
+        - idoc (Intermediate Document)
+        - BAPI (Business Application Programming Interface)
+        - SAP PI/PO (Process Integration)
+        - SAP Cloud Integration (CPI)
+    - name: Oracle
+      versions: [Oracle EBS, Oracle Cloud ERP]
+      integration_methods:
+        - Oracle Integration Cloud (OIC)
+        - REST/SOAP APIs
+        - Oracle Data Integrator (ODI)
+        - GoldenGate for CDC
+
+  data_extraction_patterns:
+    - data_domain: Financial
+      extraction_type: batch
+      frequency: Daily
+      methods:
+        - RFC call to extraction BAPIs
+        - IDoc flat file extraction
+        - OIC REST polling
+      considerations:
+        - Fiscal period alignment
+        - Currency conversion handling
+        - Inter-company transaction handling
+    - data_domain: Supply Chain
+      extraction_type: cdc
+      frequency: Near real-time
+      methods:
+        - IDoc streaming
+        - ODI CDC capture
+        - GoldenGate replication
+      considerations:
+        - Plant/warehouse location mapping
+        - Unit of measure conversion
+        - ASN and shipment tracking
+    - data_domain: Master Data
+      extraction_type: event-driven
+      frequency: On-change
+      methods:
+        - BAPI change pointers
+        - IDoc status change events
+        - OIC change detection
+      considerations:
+        - Material number cross-reference tables
+        - Customer/vendor hierarchy mapping
+
+  transformation_rules:
+    - source: SAP
+      target_standard: canonical_customer
+      mapping:
+        KUNNR: customer_id
+        NAME1: name
+        STCD1: tax_id
+        ADRNR: address_ref
+        KTOKD: customer_account_group
+    - source: Oracle
+      target_standard: canonical_order
+      mapping:
+        HEADER_ID: order_id
+        ORG_ID: operating_unit
+        CREATION_DATE: order_date
+        CUSTOMER_ID: customer_ref
+
+  loading_patterns:
+    - target_archetype: customer-data-platform
+      direction: source
+      pattern: batch_etl
+      details: >
+        Daily batch extraction of customer and vendor master data
+        from SAP/Oracle, transformed to canonical format, and loaded
+        into the CDP identity graph for customer 360 unification.
+    - target_archetype: analytics-pipeline
+      direction: source
+      pattern: cdc_streaming
+      details: >
+        Continuous extraction of transactional data (orders, invoices,
+        deliveries) via GoldenGate or OIC streaming, loaded into the
+        analytics warehouse for financial and operational reporting.
+    - target_archetype: workflow-engine
+      direction: trigger
+      pattern: event-api
+      details: >
+        ERP business events (order creation, goods receipt, invoice approval)
+        published as events to trigger workflow processes in the workflow engine
+        archetype for approval routing and exception handling.
+
+  error_handling:
+    retry_policy:
+      max_attempts: 3
+      backoff: exponential
+      base_interval_seconds: 30
+    dead_letter_handling:
+      - store_failed_records: true
+        notification_threshold: 5
+        alert_channels: [email, slack]
+    reconciliation:
+      - run_daily_reconciliation: true
+        compare_record_counts: true
+        flag_discrepancies: true
+
+  security_considerations:
+    data_classification: financial
+    compliance:
+      - SOX controls required
+      - Segregation of duties enforced
+      - Audit trail for all data access
+    authentication:
+      SAP: OAuth 2.0 with SAP Identity Authentication Service (IAS)
+      Oracle: OAuth 2.0 with Oracle IDCS
+    network:
+      private_endpoint_preferred: true
+      vpn_or_express_route_required: true

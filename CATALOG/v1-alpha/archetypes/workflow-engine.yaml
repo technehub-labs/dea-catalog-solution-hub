@@ -1,0 +1,80 @@
+id: dea:archetype-workflow-engine
+type: SolutionComponent
+name: Workflow Engine Archetype
+abbreviation: Workflow Engine
+version: "1.0.0"
+status: active
+description: >
+  Canonical delivery archetype for implementing a Workflow Engine. Covers BPMN
+  engine selection and configuration, workflow modelling and design, human-in-the-loop
+  task management, compensation and saga-based rollback logic, and workflow
+  observability for enterprise process orchestration.
+archetype_class: orchestration
+complexity: medium
+delivery_sprints: 7
+team_size: 3-5
+
+patterns_applied:
+  - dea:pattern-saga
+  - dea:pattern-state-machine
+
+services_realised:
+  - dea:service-process-orchestration
+
+capabilities_enabled:
+  - dea:capability-workflow-orchestration
+  - dea:capability-compensation
+  - dea:capability-human-in-the-loop
+
+infrastructure_requirements:
+  - BPMN Engine: Camunda / Activiti / Flowable / Temporal
+  - Database: PostgreSQL / MySQL for workflow state
+  - Queue: RabbitMQ / Kafka for async task delivery
+  - Monitoring: Workflow telemetry, Camunda Optimize / custom dashboards
+  - UI: Tasklist application for human-in-the-loop
+
+delivery_phases:
+  - phase: Discovery
+    sprints: 1-2
+    focus: Process inventory, BPMN modelling, tooling selection
+  - phase: Foundation
+    sprints: 3
+    focus: BPMN engine setup, base workflow deployment, CI/CD for workflows
+  - phase: Build
+    sprints: 4-5
+    focus: Complex workflows, human-in-the-loop tasks, compensation handlers
+  - phase: Harden
+    sprint: 6
+    focus: Performance testing, failure recovery, audit logging
+  - phase: Launch
+    sprint: 7
+    focus: Process migration, UAT, training, cutover
+
+exit_criteria:
+  - All critical business processes modelled in BPMN
+  - Human-in-the-loop tasks operational
+  - Compensation logic tested for all saga workflows
+  - Process SLA monitoring active
+
+governance_checkpoints:
+  - Process modelling review gate (end of Discovery)
+  - Compensation design gate (end of Build)
+  - UAT sign-off gate (before Launch)
+
+relationships:
+  - source_id: dea:archetype-workflow-engine
+    target_id: dea:pattern-saga
+    relationship_type: applies_pattern
+  - source_id: dea:archetype-workflow-engine
+    target_id: dea:pattern-state-machine
+    relationship_type: applies_pattern
+  - source_id: dea:archetype-workflow-engine
+    target_id: dea:service-process-orchestration
+    relationship_type: implements_service
+
+tags:
+  - solution-archetype
+  - orchestration
+  - bpmn
+  - workflow
+  - saga

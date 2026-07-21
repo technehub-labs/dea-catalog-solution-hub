@@ -1,0 +1,164 @@
+delivery_template:
+  archetype_id: dea:archetype-customer-data-platform
+  sprint_duration: 2 weeks
+  total_sprints: 12
+
+  sprint_plan:
+    - sprint: 1
+      phase: Discovery
+      activities:
+        - Conduct source system audit (CRM, POS, Web, Mobile, Call Center)
+        - Document customer identity requirements and resolution strategy
+        - Produce high-level architecture design (HLD)
+        - Identify integration points with existing data warehouse
+      exit_criteria:
+        - Source audit report complete
+        - HLD reviewed and approved
+        - Identity resolution approach agreed
+        - Sprint 2 kickoff prep done
+
+    - sprint: 2
+      phase: Discovery
+      activities:
+        - Detailed requirements for each source system ingestion
+        - Choose identity resolution approach (probabilistic vs deterministic)
+        - Evaluate and select CDP platform / build approach
+        - Produce low-level architecture design (LLD)
+        - Sprint 1 retrospective and sprint 2 review
+      exit_criteria:
+        - Detailed requirements document approved
+        - Identity resolution approach selected
+        - CDP platform evaluation complete
+        - LLD reviewed and approved
+
+    - sprint: 3
+      phase: Foundation
+      activities:
+        - Stand up CDP environment (cloud infrastructure)
+        - Configure identity resolution engine base
+        - Define unified customer profile data model
+        - CI/CD pipeline for data pipelines
+        - Set up local development environment
+      exit_criteria:
+        - Environment provisioned and accessible
+        - Base identity resolution running on synthetic data
+        - Profile schema reviewed and approved
+        - CI/CD pipeline operational
+
+    - sprint: 4
+      phase: Foundation
+      activities:
+        - Implement base ingestion connectors for 2 priority sources
+        - Deploy schema registry for profile schema versioning
+        - Configure data quality monitoring framework
+        - Define GDPR deletion and consent management strategy
+        - Sprint 3 retrospective and sprint 4 review
+      exit_criteria:
+        - Two source connectors deployed and tested
+        - Schema registry operational
+        - Data quality dashboard available
+        - GDPR strategy documented and approved
+
+    - sprint: 5
+      phase: Build
+      activities:
+        - Build remaining source ingestion connectors
+        - Implement identity graph and probabilistic matching
+        - Develop profile unification logic
+        - Create activation API endpoints
+      exit_criteria:
+        - All source connectors deployed
+        - Identity graph operational on test data
+        - Profile unification logic verified
+        - Activation endpoints documented
+
+    - sprint: 6
+      phase: Build
+      activities:
+        - Implement deterministic identity resolution
+        - Build profile stitching and merge logic
+        - Develop audience segmentation engine
+        - Create reverse ETL pipeline framework
+      exit_criteria:
+        - Deterministic matching operational
+        - Profile stitching accuracy > 90% on test set
+        - Audience segmentation functional
+        - Reverse ETL framework deployed
+
+    - sprint: 7
+      phase: Build
+      activities:
+        - Implement PII masking and data governance controls
+        - Build consent management and preference centre
+        - Develop reporting and analytics on CDP data
+        - Integrate with data warehouse bi-directional sync
+      exit_criteria:
+        - PII governance controls verified
+        - Consent management operational
+        - CDP analytics dashboard available
+        - Data warehouse sync functional
+
+    - sprint: 8
+      phase: Build
+      activities:
+        - Performance testing and query optimisation
+        - Security hardening (penetration testing)
+        - Activate 2 downstream systems via reverse ETL
+        - Develop operational runbooks and SLA documentation
+      exit_criteria:
+        - P99 ingestion latency < 30s achieved
+        - Security review passed
+        - Two downstream activations live
+        - Runbooks reviewed and approved
+
+    - sprint: 9
+      phase: Build
+      activities:
+        - Complete remaining downstream activations
+        - Conduct full GDPR audit
+        - Implement backup and disaster recovery procedures
+        - Load test at target scale (10M profiles)
+      exit_criteria:
+        - All planned activations complete
+        - GDPR audit findings resolved
+        - DR procedures tested
+        - Load test results within SLA
+
+    - sprint: 10
+      phase: Harden
+      activities:
+        - Chaos engineering: failure injection testing
+        - SOC 2 Type II control documentation
+        - Performance regression testing
+        - Final security review and hardening
+      exit_criteria:
+        - Chaos test results documented
+        - SOC 2 documentation complete
+        - No performance regressions found
+        - Security hardening verified
+
+    - sprint: 11
+      phase: Harden
+      activities:
+        - UAT planning and test case preparation
+        - User acceptance testing execution
+        - Training materials development
+        - Hypercare runbook finalisation
+      exit_criteria:
+        - UAT test cases approved
+        - UAT execution > 95% pass rate
+        - Training materials reviewed
+        - Hypercare team briefed
+
+    - sprint: 12
+      phase: Launch
+      activities:
+        - Production cutover and go-live
+        - Hypercare monitoring (2 weeks post-launch)
+        - Handoff to support operations
+        - Retrospective and lessons learned documentation
+      exit_criteria:
+        - Production cutover successful
+        - Identity resolution accuracy > 95%
+        - SLA compliance verified
+        - Project closure approved

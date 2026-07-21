@@ -1,0 +1,81 @@
+id: dea:archetype-event-streaming-hub
+type: SolutionComponent
+name: Event Streaming Hub Archetype
+abbreviation: Event Streaming Hub
+version: "1.0.0"
+status: active
+description: >
+  Canonical delivery archetype for implementing an Event Streaming Hub. Covers
+  Kafka/Kinesis cluster setup, schema registry, dead-letter queues, event replay
+  capabilities, Exactly-once semantics, and multi-tenancy for enterprise event
+  distribution at scale.
+archetype_class: integration
+complexity: high
+delivery_sprints: 10
+team_size: 5-7
+
+patterns_applied:
+  - dea:pattern-event-sourcing
+  - dea:pattern-saga
+
+services_realised:
+  - dea:service-event-bus
+
+capabilities_enabled:
+  - dea:capability-event-streaming
+  - dea:capability-event-replay
+  - dea:capability-multi-tenancy
+
+infrastructure_requirements:
+  - Streaming: Apache Kafka (Confluent Cloud / MSK) or AWS Kinesis
+  - Schema Registry: Confluent Schema Registry / AWS Glue Schema Registry
+  - Storage: EBS / S3 for retention
+  - Monitoring: Kafka Monitor / Cruise Control / Datadog
+  - Multi-tenancy: Namespace isolation, quotas, ACLs
+
+delivery_phases:
+  - phase: Discovery
+    sprints: 1-2
+    focus: Event inventory, schema design, topology planning
+  - phase: Foundation
+    sprints: 3-4
+    focus: Kafka/Kinesis cluster, schema registry, base producer/consumer
+  - phase: Build
+    sprints: 5-7
+    focus: Dead-letter queues, event replay, Exactly-once delivery, multi-tenancy
+  - phase: Harden
+    sprints: 8-9
+    focus: Performance benchmarking, chaos testing, disaster recovery
+  - phase: Launch
+    sprint: 10
+    focus: Production cutover, consumer migration, monitoring dashboards
+
+exit_criteria:
+  - P99 end-to-end latency < 100ms
+  - Event replay functional within RPO window
+  - Dead-letter queue processing automated
+  - Multi-tenant isolation verified
+
+governance_checkpoints:
+  - Schema governance review gate (end of Discovery)
+  - Security and data lineage gate (end of Foundation)
+  - DR/chaos testing gate (end of Harden)
+  - Production cutover gate (before Launch)
+
+relationships:
+  - source_id: dea:archetype-event-streaming-hub
+    target_id: dea:pattern-event-sourcing
+    relationship_type: applies_pattern
+  - source_id: dea:archetype-event-streaming-hub
+    target_id: dea:pattern-saga
+    relationship_type: applies_pattern
+  - source_id: dea:archetype-event-streaming-hub
+    target_id: dea:service-event-bus
+    relationship_type: implements_service
+
+tags:
+  - solution-archetype
+  - integration
+  - event-streaming
+  - kafka
+  - kinesis

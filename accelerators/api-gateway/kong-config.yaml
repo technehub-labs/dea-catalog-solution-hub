@@ -1,0 +1,124 @@
+_format_version: "3.0"
+_transformations:
+  - name: lowercase_headers
+    path: /*
+    when:
+      header-names:
+        - Authorization
+    action: lowercase
+  - name: remove_pii_response
+    path: /api/v1/customers/*
+    when:
+      response-jsonpaths:
+        - $.ssn
+        - $.credit_card
+    action: remove
+
+services:
+  - name: customer-service
+    url: http://customer-svc.default.svc.cluster.local:8080
+    routes:
+      - name: customer-route
+        paths:
+          - /api/v1/customers
+        methods:
+          - GET
+          - POST
+          - PUT
+        strip_path: false
+        plugins:
+          - name: rate-limiting
+            config:
+              minute: 100
+              policy: redis
+          - name: oauth2-introspection
+            config:
+              introspection_url: http://auth-svc.default.svc.cluster.local:8080/oauth2/introspect
+              ttl: 300
+          - name: correlation-id
+    plugins:
+      - name: prometheus
+        config:
+          per_consumer: true
+
+  - name: order-service
+    url: http://order-svc.default.svc.cluster.local:8081
+    routes:
+      - name: order-route
+        paths:
+          - /api/v1/orders
+        methods:
+          - GET
+          - POST
+          - DELETE
+        strip_path: false
+        plugins:
+          - name: rate-limiting
+            config:
+              minute: 200
+              policy: local
+          - name: circuit-breaker
+            config:
+              enabled: true
+              error_rate: 0.3
+              volume_threshold: 20
+              health_check_interval: 10
+              unhealthy_status: 503
+              healthy_status: 200
+          - name: correlation-id
+    plugins:
+      - name: prometheus
+        config:
+          per_consumer: false
+
+  - name: analytics-service
+    url: http://analytics-svc.default.svc.cluster.local:8082
+    routes:
+      - name: analytics-route
+        paths:
+          - /api/v1/analytics
+        methods:
+          - GET
+          - POST
+        strip_path: false
+        plugins:
+          - name: rate-limiting
+            config:
+              minute: 500
+              policy: redis
+          - name: request-transformer
+            config:
+              add:
+                headers:
+                  - X-Analytics-Source:kong-gateway
+          - name: correlation-id
+    plugins:
+      - name: prometheus
+        config:
+          per_consumer: false
+
+upstream_keepalive_pool:
+  size: 10
+  max_idle_connections: 10
+  max_idle_connections_per_route: 2
+  idle_timeout: 60
+
+plugins:
+  - name: correlation-id
+    config:
+      header_name: X-Request-ID
+      generator: uuid
+      echo_downstream: true
+  - name: response-transformer
+    config:
+      add:
+        headers:
+          - X-Gateway:Kong-3.5
+  - name: loggly
+    config:
+      host: logs-01.loggly.com
+      port: 514
+      protocol: tcp
+      successful_severity: info
+      client_errors_severity: warn
+      server_errors_severity: err

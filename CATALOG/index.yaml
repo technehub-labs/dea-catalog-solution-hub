@@ -1,0 +1,98 @@
+catalog:
+  name: Solution Hub
+  version: "1.0.0"
+  status: alpha
+  description: >
+    L1 reference catalog for solution archetypes, delivery templates,
+    and implementation accelerators that bridge architecture patterns
+    to production deployment.
+  repository: https://github.com/technehub-labs/dea-catalog-solution-hub
+  layer: L1
+
+  releases:
+    - id: v1-alpha
+      label: "v1-alpha"
+      status: active
+      archetypes_count: 6
+      delivery_templates_count: 2
+      accelerators_count: 2
+      integration_guides_count: 3
+
+  archetypes_index:
+    - id: dea:archetype-customer-data-platform
+      name: Customer Data Platform Archetype
+      archetype_class: data-platform
+      complexity: high
+      delivery_sprints: 12
+      file: v1-alpha/archetypes/customer-data-platform.yaml
+    - id: dea:archetype-api-gateway
+      name: API Gateway Archetype
+      archetype_class: integration
+      complexity: medium
+      delivery_sprints: 6
+      file: v1-alpha/archetypes/api-gateway-archetype.yaml
+    - id: dea:archetype-event-streaming-hub
+      name: Event Streaming Hub Archetype
+      archetype_class: integration
+      complexity: high
+      delivery_sprints: 10
+      file: v1-alpha/archetypes/event-streaming-hub.yaml
+    - id: dea:archetype-identity-provider
+      name: Identity Provider Archetype
+      archetype_class: security
+      complexity: medium
+      delivery_sprints: 8
+      file: v1-alpha/archetypes/identity-provider.yaml
+    - id: dea:archetype-workflow-engine
+      name: Workflow Engine Archetype
+      archetype_class: orchestration
+      complexity: medium
+      delivery_sprints: 7
+      file: v1-alpha/archetypes/workflow-engine.yaml
+    - id: dea:archetype-analytics-pipeline
+      name: Analytics Pipeline Archetype
+      archetype_class: data-platform
+      complexity: medium
+      delivery_sprints: 8
+      file: v1-alpha/archetypes/analytics-pipeline.yaml
+
+  delivery_templates_index:
+    - id: dea:delivery-customer-data-platform
+      archetype_id: dea:archetype-customer-data-platform
+      total_sprints: 12
+      file: v1-alpha/delivery-templates/customer-data-platform-delivery.yaml
+    - id: dea:delivery-api-gateway
+      archetype_id: dea:archetype-api-gateway
+      total_sprints: 6
+      file: v1-alpha/delivery-templates/api-gateway-delivery.yaml
+
+  accelerators_index:
+    - id: accel-cdp
+      name: Customer Data Platform Accelerator
+      archetype_id: dea:archetype-customer-data-platform
+      files:
+        - accelerators/customer-data-platform/docker-compose.yaml
+        - accelerators/customer-data-platform/infrastructure.tf
+        - accelerators/customer-data-platform/config-schema.yaml
+    - id: accel-api-gateway
+      name: API Gateway Accelerator
+      archetype_id: dea:archetype-api-gateway
+      files:
+        - accelerators/api-gateway/kong-config.yaml
+        - accelerators/api-gateway/service-routing.yaml
+
+  integration_guides_index:
+    - id: ig-erp
+      name: ERP Integration Guide
+      systems: [SAP, Oracle]
+      file: integration-guides/erp-integration.yaml
+    - id: ig-crm
+      name: CRM Integration Guide
+      systems: [Salesforce, HubSpot]
+      file: integration-guides/crm-integration.yaml
+    - id: ig-data-warehouse
+      name: Data Warehouse Integration Guide
+      systems: [Snowflake, BigQuery, Redshift]
+      file: integration-guides/data-warehouse-integration.yaml
+
+  viewpoints_file: viewpoints/stakeholder-views.yaml

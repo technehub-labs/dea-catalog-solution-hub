@@ -1,0 +1,85 @@
+id: dea:archetype-customer-data-platform
+type: SolutionComponent
+name: Customer Data Platform Archetype
+abbreviation: CDP Archetype
+version: "1.0.0"
+status: active
+description: >
+  Canonical delivery archetype for implementing a Customer Data Platform (CDP).
+  Covers data ingestion from multiple sources, identity resolution, unified customer
+  profile creation, activation to downstream systems, and governance controls.
+archetype_class: data-platform
+complexity: high
+delivery_sprints: 12
+team_size: 6-8
+
+patterns_applied:
+  - dea:pattern-cqrs
+  - dea:pattern-event-sourcing
+  - dea:pattern-api-gateway
+
+services_realised:
+  - dea:service-customer-360
+
+capabilities_enabled:
+  - dea:capability-customer-data-management
+  - dea:capability-customer-identity-resolution
+
+infrastructure_requirements:
+  - Cloud: AWS / Azure / GCP
+  - Ingestion: Kafka / Kinesis
+  - Storage: Snowflake / BigQuery / Redshift
+  - Identity: LiveRamp / Amperity / custom
+  - Activation: Reverse ETL (Census / Hightouch)
+
+delivery_phases:
+  - phase: Discovery
+    sprints: 1-2
+    focus: Source audit, requirements, architecture design
+  - phase: Foundation
+    sprints: 3-4
+    focus: Identity resolution engine, base data model
+  - phase: Build
+    sprints: 5-9
+    focus: Ingestion pipelines, profile unification, activation endpoints
+  - phase: Harden
+    sprints: 10-11
+    focus: Performance, security review, compliance validation
+  - phase: Launch
+    sprint: 12
+    focus: UAT, training, cutover, hypercare
+
+exit_criteria:
+  - Identity resolution accuracy > 95%
+  - P99 ingestion latency < 30s
+  - GDPR deletion pipeline operational
+  - SOC 2 Type II audit complete
+
+governance_checkpoints:
+  - Architecture review gate (end of Discovery)
+  - Security review gate (end of Foundation)
+  - Compliance gate (before Launch)
+  - UAT sign-off gate (before hypercare)
+
+relationships:
+  - source_id: dea:archetype-customer-data-platform
+    target_id: dea:pattern-cqrs
+    relationship_type: applies_pattern
+  - source_id: dea:archetype-customer-data-platform
+    target_id: dea:pattern-event-sourcing
+    relationship_type: applies_pattern
+  - source_id: dea:archetype-customer-data-platform
+    target_id: dea:pattern-api-gateway
+    relationship_type: applies_pattern
+  - source_id: dea:archetype-customer-data-platform
+    target_id: dea:service-customer-360
+    relationship_type: implements_service
+  - source_id: dea:archetype-customer-data-platform
+    target_id: dea:standard-rest
+    relationship_type: conforms_to
+
+tags:
+  - solution-archetype
+  - data-platform
+  - cdp
+  - customer

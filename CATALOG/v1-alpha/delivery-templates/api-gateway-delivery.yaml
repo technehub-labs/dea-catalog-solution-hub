@@ -1,0 +1,90 @@
+delivery_template:
+  archetype_id: dea:archetype-api-gateway
+  sprint_duration: 2 weeks
+  total_sprints: 6
+
+  sprint_plan:
+    - sprint: 1
+      phase: Foundation
+      activities:
+        - Evaluate and select API Gateway platform (Kong / Apigee / AWS API Gateway)
+        - Design gateway topology and routing strategy
+        - Set up Kubernetes cluster for gateway runtime
+        - Deploy base gateway with health endpoint
+        - Configure GitOps pipeline for gateway config
+      exit_criteria:
+        - Platform selection approved
+        - Gateway topology documented
+        - Kubernetes cluster provisioned
+        - Base gateway operational
+
+    - sprint: 2
+      phase: Foundation
+      activities:
+        - Configure base routing for 3 priority APIs
+        - Implement OAuth2 authentication plugin
+        - Set up API key management
+        - Configure request/response logging
+        - Sprint 1 retrospective and sprint 2 review
+      exit_criteria:
+        - Three APIs routed through gateway
+        - OAuth2 flow verified
+        - API key issuance workflow operational
+        - Logging pipeline active
+
+    - sprint: 3
+      phase: Build
+      activities:
+        - Implement rate limiting and throttling policies
+        - Configure circuit breaker plugin for all upstream services
+        - Set up service discovery integration
+        - Implement request transformation policies
+        - Develop consumer portal for API documentation
+      exit_criteria:
+        - Rate limiting operational for all routes
+        - Circuit breaker configured and tested
+        - Service discovery integrated
+        - Developer portal live
+
+    - sprint: 4
+      phase: Build
+      activities:
+        - Implement advanced routing (path-based, header-based, weight-based)
+        - Configure canary deployment support
+        - Set up JWT validation andClaims routing
+        - Implement webhook and async callback support
+        - Sprint 3 retrospective and sprint 4 review
+      exit_criteria:
+        - Advanced routing verified
+        - Canary deployments functional
+        - JWT validation operational
+        - Webhook support tested
+
+    - sprint: 5
+      phase: Harden
+      activities:
+        - Conduct chaos engineering tests (upstream failure injection)
+        - Performance testing (P99 latency < 50ms target)
+        - Security review (OWASP Top 10 testing)
+        - Configure auto-scaling policies
+        - Document operational runbooks and SLA definitions
+      exit_criteria:
+        - Chaos test results within acceptable bounds
+        - P99 latency target met
+        - Security findings resolved or accepted
+        - Auto-scaling verified
+        - Runbooks approved
+
+    - sprint: 6
+      phase: Launch
+      activities:
+        - Traffic migration planning and execution (strangler fig pattern)
+        - UAT with consuming applications
+        - Monitoring dashboard finalisation
+        - Production cutover and go-live
+        - Hypercare support and retrospective
+      exit_criteria:
+        - Zero-downtime migration complete
+        - All consuming applications verified
+        - Monitoring dashboards reviewed
+        - Production SLA compliance confirmed

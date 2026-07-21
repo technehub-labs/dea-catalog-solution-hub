@@ -1,0 +1,149 @@
+integration_guide:
+  id: ig-crm
+  name: CRM Integration Guide
+  description: >
+    Integration patterns for connecting Solution Hub archetypes to Salesforce and
+    HubSpot CRM platforms. Covers customer and contact synchronization, sales
+    opportunity data flows, activity tracking, and lead-to-cash process integration.
+  supported_systems:
+    - name: Salesforce
+      editions: [Professional, Enterprise, Unlimited]
+      integration_methods:
+        - Salesforce REST API
+        - Salesforce Bulk API 2.0
+        - Salesforce Platform Events
+        - MuleSoft Anypoint Platform
+        - Salesforce Connect (external objects)
+    - name: HubSpot
+      tiers: [Starter, Professional, Enterprise]
+      integration_methods:
+        - HubSpot REST API v3
+        - HubSpot Webhooks
+        - HubSpot Lists API
+        - Zapier (for simple integrations)
+
+  data_extraction_patterns:
+    - data_domain: Customer Master
+      extraction_type: near-real-time
+      frequency: On-change via webhooks + periodic reconciliation
+      methods:
+        - Salesforce Platform Events for real-time changes
+        - Salesforce REST API polling for fallback
+        - HubSpot webhooks for contact updates
+      considerations:
+        - Deduplication based on email and phone
+        - Owner/territory assignment mapping
+        - Record type and sales process alignment
+    - data_domain: Sales Opportunities
+      extraction_type: near-real-time
+      frequency: On-change via streaming API
+      methods:
+        - Salesforce Change Data Capture (CDC)
+        - HubSpot deal property webhooks
+      considerations:
+        - Stage and probability mapping
+        - Forecasting data alignment
+        - Multi-currency handling
+    - data_domain: Activity & Engagement
+      extraction_type: batch
+      frequency: Hourly
+      methods:
+        - Salesforce Bulk API for activity history
+        - HubSpot engagement API for emails/calls/meetings
+      considerations:
+        - Activity type normalization
+        - Sentiment scoring for interactions
+        - Attribution modelling
+
+  transformation_rules:
+    - source: Salesforce
+      target_standard: canonical_customer
+      mapping:
+        Id: customer_id
+        Email: email_address
+        Phone: phone_number
+        Name: full_name
+        AccountId: account_ref
+        OwnerId: sales_owner_ref
+    - source: HubSpot
+      target_standard: canonical_customer
+      mapping:
+        vid: customer_id
+        properties_email_value: email_address
+        properties_phone_value: phone_number
+        properties_firstname_value: first_name
+        properties_lastname_value: last_name
+
+  loading_patterns:
+    - target_archetype: customer-data-platform
+      direction: source
+      pattern: cdc_streaming
+      details: >
+        Customer and contact data from Salesforce/HubSpot flows into the CDP
+        as a primary source for the unified customer profile. Changes are captured
+        via CDC or webhooks and fed into the identity resolution engine.
+    - target_archetype: analytics-pipeline
+      direction: source
+      pattern: batch_etl
+      details: >
+        Sales pipeline, opportunity, and forecast data loaded into the analytics
+        warehouse for revenue reporting, forecasting models, and sales performance
+        dashboards.
+    - target_archetype: workflow-engine
+      direction: trigger
+      pattern: event-api
+      details: >
+        CRM opportunity stage changes, closed-won events, and renewal reminders
+        trigger workflow processes for approval, alerting, and orchestration of
+        downstream systems.
+    - target_archetype: api-gateway
+      direction: target
+      pattern: rest_api_exposure
+      details: >
+        Customer and account data exposed via the API Gateway archetype for
+        consumption by other enterprise applications needing real-time CRM data.
+
+  reverse_etl_patterns:
+    - use_case: Audience Sync
+      source: cdp_unified_profiles
+      target: crm_lists
+      method: HubSpot Lists API / Salesforce Campaigns
+      details: >
+        Customer segments created in the CDP are pushed back to CRM as
+        marketing lists or campaign audiences for targeted outreach.
+    - use_case: Score Sync
+      source: analytics_ml_scores
+      target: crm_contact
+      method: Salesforce custom field update / HubSpot property update
+      details: >
+        Propensity scores and customer lifetime value predictions from the
+        analytics pipeline are written back to CRM records for sales prioritization.
+
+  error_handling:
+    retry_policy:
+      max_attempts: 5
+      backoff: exponential
+      base_interval_seconds: 15
+    api_governance:
+      - rate_limit_monitoring: true
+        alert_threshold_percent: 80
+      - bulk_vs_streaming_selection: automatic
+        threshold_records: 10000
+    dead_letter_handling:
+      quarantine_failed_syncs: true
+      manual_review_after: 24h
+      slack_alert_threshold: 10 records
+
+  security_considerations:
+    data_classification: customer_pii
+    compliance:
+      - GDPR: right to access and deletion must be honoured
+      - CCPA: opt-out mechanisms supported
+      - Marketing consent tracking required
+    authentication:
+      Salesforce: OAuth 2.0 Connected App + JWT Bearer flow
+      HubSpot: OAuth 2.0 Private App
+    field_level_security:
+      mask_social_security_numbers: true
+      encrypt_pii_fields: true
+      respect_field_level_permissions: true

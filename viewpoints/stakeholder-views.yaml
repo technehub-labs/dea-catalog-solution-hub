@@ -1,0 +1,225 @@
+viewpoints:
+  version: "1.0.0"
+  description: >
+    Stakeholder viewpoints for Solution Hub. Each viewpoint is designed to answer
+    the key questions relevant to a specific stakeholder role in an enterprise
+    architecture engagement.
+
+  stakeholders:
+    - role: CTO
+      title: Chief Technology Officer
+      concerns:
+        - roi: What is the return on investment for each solution archetype?
+        - risk: What are the technical and operational risks?
+        - vendor_lock_in: How much vendor dependency does this create?
+        - competitive_advantage: Does this differentiate our business?
+      viewpoint:
+        summary: >
+          CTOs need to understand the strategic value, risk profile, and long-term
+          implications of each solution archetype. Solution Hub provides a consistent
+          framework for evaluating build vs. buy decisions, vendor dependencies,
+          and architectural maturity.
+        assessment_criteria:
+          - criterion: Strategic Fit
+            weight: 30%
+            questions:
+              - Does the archetype align with our 3-year technology strategy?
+              - Does it enable new business capabilities or just improve existing ones?
+          - criterion: Risk Profile
+            weight: 25%
+            questions:
+              - What is the operational complexity?
+              - How mature is the technology (Gartner Hype Cycle position)?
+              - What are the failure modes and recovery options?
+          - criterion: Financial Impact
+            weight: 25%
+            questions:
+              - Total cost of ownership over 5 years?
+              - Payback period compared to manual processes?
+              - Impact on headcount and productivity?
+          - criterion: Architecture Governance
+            weight: 20%
+            questions:
+              - Does it increase or decrease architectural complexity?
+              - Are we creating new technical debt?
+              - How does it integrate with our existing platform investments?
+        decision_filters:
+          - Minimum viable maturity: production_proven
+          - Maximum acceptable risk: medium
+          - Vendor dependency tolerance: moderate
+        output: strategic_assessment_report
+
+    - role: ChiefArchitect
+      title: Chief Architect
+      concerns:
+        - standards_compliance: Does this conform to enterprise architecture standards?
+        - patterns: What patterns does this establish for the broader ecosystem?
+        - interoperability: How well does it integrate with existing systems?
+        - technical_debt: Does it add to or reduce technical debt?
+      viewpoint:
+        summary: >
+          Chief Architects use Solution Hub to ensure consistency across solution
+          implementations, enforce architectural principles, and govern the evolution
+          of the enterprise architecture. They evaluate each archetype for pattern
+          conformance and cross-cutting concerns.
+        assessment_criteria:
+          - criterion: Pattern Conformance
+            weight: 30%
+            questions:
+              - Does the archetype apply the correct enterprise patterns?
+              - Are pattern relationships properly declared?
+              - Does it follow our API design standards?
+          - criterion: Cross-Cutting Concerns
+            weight: 25%
+            questions:
+              - How are security, observability, and governance addressed?
+              - Does it comply with our non-functional requirements?
+              - Are there shared services or platforms it must integrate with?
+          - criterion: Interoperability
+            weight: 25%
+            questions:
+              - Does it consume or expose standard interfaces?
+              - Is the data model aligned with our canonical data model?
+              - Does it support our integration patterns (sync, async, event-driven)?
+          - criterion: Technical Debt Impact
+            weight: 20%
+            questions:
+              - Does it introduce new debt or consolidate existing debt?
+              - Are there migration paths from current state?
+              - What is the remediation cost if standards change?
+        decision_filters:
+          - Pattern compliance: mandatory
+          - Non-functional requirements: must meet all
+          - Integration capability: must support all required patterns
+        output: architecture_compliance_report
+
+    - role: SolutionsArchitect
+      title: Solutions Architect
+      concerns:
+        - archetype_selection: Which archetype fits this business problem?
+        - customization: How do I adapt the archetype to specific requirements?
+        - effort_estimation: How long and how many people to deliver?
+        - integration_points: What are the upstream and downstream dependencies?
+      viewpoint:
+        summary: >
+          Solutions Architects use Solution Hub to select the appropriate archetype
+          for a given problem, understand delivery effort, and customize the template
+          to specific requirements. They bridge the gap between business problems
+          and technical solutions.
+        assessment_criteria:
+          - criterion: Problem Fit
+            weight: 35%
+            questions:
+              - Does the archetype class match the business problem category?
+              - Is the complexity level appropriate for the problem scope?
+              - Are the required capabilities supported?
+          - criterion: Delivery Feasibility
+            weight: 30%
+            questions:
+              - Does our team have the required skills?
+              - Is the timeline realistic for our organization?
+              - Do we have access to required infrastructure and tools?
+          - criterion: Customization Effort
+            weight: 20%
+            questions:
+              - How much of the archetype needs customization?
+              - Are there extension points for common customizations?
+              - What is the testing scope for customizations?
+          - criterion: Dependency Clarity
+            weight: 15%
+            questions:
+              - What are the upstream data sources and their availability?
+              - What downstream systems must consume the outputs?
+              - Are there shared services that impose constraints?
+        decision_filters:
+          - Minimum team size availability: must meet archetype requirement
+          - Sprint duration: 2 weeks default
+          - Phase gates: must be followed as defined
+        output: delivery_plan
+
+    - role: PlatformEngineer
+      title: Platform Engineer
+      concerns:
+        - infrastructure: What infrastructure does this archetype require?
+        - operations: How do I operate and monitor this in production?
+        - scaling: How does it scale under load?
+        - security: What are the security requirements and controls?
+      viewpoint:
+        summary: >
+          Platform Engineers use Solution Hub to understand infrastructure
+          requirements, operational procedures, and security controls for each
+          archetype. They ensure production readiness and ongoing operational
+          excellence.
+        assessment_criteria:
+          - criterion: Infrastructure Requirements
+            weight: 25%
+            questions:
+              - What cloud resources and services are required?
+              - Are there specific availability or redundancy requirements?
+              - What is the estimated resource utilization profile?
+          - criterion: Operational Readiness
+            weight: 30%
+            questions:
+              - Are there runbooks for common operational tasks?
+              - What monitoring and alerting is required?
+              - What are the backup and disaster recovery requirements?
+          - criterion: Scalability
+            weight: 25%
+            questions:
+              - What are the horizontal and vertical scaling patterns?
+              - Are there stateless vs. stateful component considerations?
+              - What are the performance boundaries?
+          - criterion: Security Posture
+            weight: 20%
+            questions:
+              - What are the network security requirements?
+              - Are there encryption requirements (at rest, in transit)?
+              - What authentication and authorization patterns are used?
+        decision_filters:
+          - Production readiness checklist: must complete all items
+          - SLA requirements: must define before implementation
+          - Security review: mandatory before launch
+        output: infrastructure_plan
+
+    - role: BusinessArchitect
+      title: Business Architect
+      concerns:
+        - capability_mapping: Which capabilities does this archetype enable?
+        - business_value: What business outcomes does this drive?
+        - process_impact: How does it change existing business processes?
+        - stakeholder_alignment: Are business stakeholders aligned on requirements?
+      viewpoint:
+        summary: >
+          Business Architects use Solution Hub to map archetypes to business
+          capabilities, understand value creation, and assess process impact.
+          They ensure solution investments are traceable to business outcomes.
+        assessment_criteria:
+          - criterion: Capability Enablement
+            weight: 30%
+            questions:
+              - Which business capabilities does this archetype directly enable?
+              - Are capabilities currently served by other solutions?
+              - What is the capability gap this fills?
+          - criterion: Business Value
+            weight: 35%
+            questions:
+              - What measurable business outcomes does this drive?
+              - What is the time-to-value for each outcome?
+              - Are outcomes aligned with strategic priorities?
+          - criterion: Process Impact
+            weight: 20%
+            questions:
+              - Which business processes are affected?
+              - Does it require process redesign or just tool replacement?
+              - What is the change management effort?
+          - criterion: Stakeholder Alignment
+            weight: 15%
+            questions:
+              - Are all affected business units represented in requirements?
+              - Is there executive sponsorship for this initiative?
+              - Are there conflicting priorities across stakeholders?
+        decision_filters:
+          - Business case: required before proceeding
+          - Executive sponsor: mandatory
+          - Affected process owners: must be engaged
+        output: business_capability_assessment

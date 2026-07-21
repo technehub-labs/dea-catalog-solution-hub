@@ -1,0 +1,82 @@
+id: dea:archetype-analytics-pipeline
+type: SolutionComponent
+name: Analytics Pipeline Archetype
+abbreviation: Analytics Pipeline
+version: "1.0.0"
+status: active
+description: >
+  Canonical delivery archetype for implementing an Analytics Pipeline. Covers
+  data ingestion from operational systems, transformation via dbt, storage in
+  cloud data warehouse (Snowflake/BigQuery/Redshift), reverse ETL activation
+  back to business systems, and BI tool integration for reporting and dashboards.
+archetype_class: data-platform
+complexity: medium
+delivery_sprints: 8
+team_size: 4-6
+
+patterns_applied:
+  - dea:pattern-cqrs
+  - dea:pattern-event-sourcing
+
+services_realised:
+  - dea:service-analytics
+
+capabilities_enabled:
+  - dea:capability-data-transformation
+  - dea:capability-business-intelligence
+  - dea:capability-reverse-etl
+
+infrastructure_requirements:
+  - Ingestion: Fivetran / Airbyte / Kafka Connect
+  - Transformation: dbt (dbt Core / dbt Cloud)
+  - Warehouse: Snowflake / BigQuery / Redshift
+  - Reverse ETL: Census / Hightouch / Airbyte
+  - BI: Tableau / Looker / Metabase / Mode
+  - Orchestration: Airflow / Dagster / Prefect
+
+delivery_phases:
+  - phase: Discovery
+    sprints: 1-2
+    focus: Source system inventory, data modelling, BI requirements
+  - phase: Foundation
+    sprints: 3-4
+    focus: Warehouse setup, base ingestion, dbt project structure
+  - phase: Build
+    sprints: 5-6
+    focus: Transformation models, reverse ETL, BI dashboards
+  - phase: Harden
+    sprint: 7
+    focus: Data quality testing, lineage tracking, performance tuning
+  - phase: Launch
+    sprint: 8
+    focus: BI rollout, stakeholder training, data governance sign-off
+
+exit_criteria:
+  - All source systems connected and syncing
+  - dbt models > 90% coverage of analytics requirements
+  - Reverse ETL active for critical business objects
+  - BI dashboards reviewed and approved by business stakeholders
+
+governance_checkpoints:
+  - Data modelling review gate (end of Discovery)
+  - Security and PII governance gate (end of Foundation)
+  - Data quality gate (end of Harden)
+  - BI sign-off gate (before Launch)
+
+relationships:
+  - source_id: dea:archetype-analytics-pipeline
+    target_id: dea:pattern-cqrs
+    relationship_type: applies_pattern
+  - source_id: dea:archetype-analytics-pipeline
+    target_id: dea:pattern-event-sourcing
+    relationship_type: applies_pattern
+  - source_id: dea:archetype-analytics-pipeline
+    target_id: dea:service-analytics
+    relationship_type: implements_service
+
+tags:
+  - solution-archetype
+  - data-platform
+  - analytics
+  - bi
+  - etl

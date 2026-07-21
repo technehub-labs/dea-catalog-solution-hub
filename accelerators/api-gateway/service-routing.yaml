@@ -1,0 +1,115 @@
+routing_rules:
+  - rule_name: customer-primary
+    priority: 100
+    match:
+      path_prefix: /api/v1/customers
+      method: [GET, POST, PUT, DELETE]
+    upstream:
+      target: customer-svc-primary.default.svc.cluster.local:8080
+      weight: 100
+    load_balancing:
+      algorithm: round-robin
+      health_check:
+        enabled: true
+        path: /health
+        interval: 10s
+        timeout: 5s
+        healthy_threshold: 2
+        unhealthy_threshold: 3
+
+  - rule_name: customer-canary
+    priority: 90
+    match:
+      path_prefix: /api/v1/customers
+      headers:
+        X-Canary: ["true"]
+    upstream:
+      target: customer-svc-canary.default.svc.cluster.local:8080
+      weight: 100
+    load_balancing:
+      algorithm: round-robin
+
+  - rule_name: order-service
+    priority: 80
+    match:
+      path_prefix: /api/v1/orders
+      method: [GET, POST, DELETE]
+    upstream:
+      target: order-svc.default.svc.cluster.local:8081
+      weight: 100
+    load_balancing:
+      algorithm: least-connections
+      health_check:
+        enabled: true
+        path: /health
+        interval: 10s
+        timeout: 3s
+        healthy_threshold: 1
+        unhealthy_threshold: 3
+
+  - rule_name: analytics-read
+    priority: 70
+    match:
+      path_prefix: /api/v1/analytics/query
+      method: [GET]
+    upstream:
+      target: analytics-svc-read.default.svc.cluster.local:8082
+      weight: 100
+    load_balancing:
+      algorithm: round-robin
+      health_check:
+        enabled: true
+        path: /ready
+        interval: 30s
+
+  - rule_name: analytics-write
+    priority: 70
+    match:
+      path_prefix: /api/v1/analytics/ingest
+      method: [POST]
+    upstream:
+      target: analytics-svc-write.default.svc.cluster.local:8083
+      weight: 100
+    load_balancing:
+      algorithm: round-robin
+
+  - rule_name: wildcard-fallback
+    priority: 1
+    match:
+      path_prefix: /api
+    upstream:
+      target: fallback-svc.default.svc.cluster.local:8080
+      weight: 100
+    load_balancing:
+      algorithm: round-robin
+      health_check:
+        enabled: true
+        path: /health
+        interval: 30s
+
+circuit_breaker_config:
+  enabled: true
+  error_rate_threshold: 0.5
+  volume_threshold: 10
+  sleep_window_seconds: 30
+  detected_error_types:
+    - http_5xx
+    - network_error
+    - timeout
+
+retry_config:
+  max_attempts: 3
+  base_interval_ms: 50
+  max_interval_ms: 1000
+  retry_on:
+    - connection_failure
+    - reset
+    - timeout
+    - gateway_error
+    - service_unavailable
+
+timeout_config:
+  connect_timeout_ms: 1000
+  read_timeout_ms: 30000
+  write_timeout_ms: 30000
+  idle_timeout_ms: 60000

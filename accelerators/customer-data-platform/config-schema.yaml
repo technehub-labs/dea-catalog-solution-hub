@@ -1,0 +1,185 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+title: CDP Configuration Schema
+description: Configuration schema for Customer Data Platform deployment
+type: object
+
+properties:
+  source_connections:
+    description: List of source system connections for data ingestion
+    type: array
+    items:
+      type: object
+      required: [source_id, source_type, connection_config]
+      properties:
+        source_id:
+          type: string
+          description: Unique identifier for the source system
+        source_type:
+          type: string
+          enum: [crm, pos, web, mobile, call_center, email, loyalty, erp]
+          description: Type of source system
+        connection_config:
+          type: object
+          properties:
+            endpoint:
+              type: string
+              description: API endpoint or connection string
+            auth_type:
+              type: string
+              enum: [api_key, oauth2, basic, custom]
+            credentials_ref:
+              type: string
+              description: Secret manager reference for credentials
+          required: [endpoint, auth_type]
+        sync_schedule:
+          type: string
+          description: Cron expression for sync schedule
+        schema_mapping:
+          type: object
+          description: Source field to canonical field mapping
+        enabled:
+          type: boolean
+          default: true
+
+  identity_rules:
+    description: Identity resolution configuration
+    type: object
+    required: [resolution_approach]
+    properties:
+      resolution_approach:
+        type: string
+        enum: [probabilistic, deterministic, hybrid]
+      probabilistic_config:
+        type: object
+        properties:
+          match_threshold:
+            type: number
+            minimum: 0
+            maximum: 1
+            default: 0.85
+          comparison_fields:
+            type: array
+            items:
+              type: object
+              properties:
+                field:
+                  type: string
+                weight:
+                  type: number
+                algorithm:
+                  type: string
+                  enum: [jaro_winkler, levenshtein, jaccard, exact]
+      deterministic_config:
+        type: object
+        properties:
+          identifier_fields:
+            type: array
+            items:
+              type: string
+            description: Fields that guarantee exact match (e.g., email, phone)
+          link_table_enabled:
+            type: boolean
+            default: true
+      hybrid_config:
+        type: object
+        properties:
+          deterministic_first:
+            type: boolean
+            default: true
+          probabilistic_fallback_threshold:
+            type: number
+
+  profile_schema:
+    description: Unified customer profile data model
+    type: object
+    required: [version, fields]
+    properties:
+      version:
+        type: string
+        pattern: "^\\d+\\.\\d+\\.\\d+$"
+      fields:
+        type: array
+        items:
+          type: object
+          required: [name, type]
+          properties:
+            name:
+              type: string
+              pattern: "^[a-z][a-z0-9_]*$"
+            type:
+              type: string
+              enum: [string, number, boolean, date, datetime, array, object]
+            pii:
+              type: boolean
+              default: false
+            required:
+              type: boolean
+              default: false
+            description:
+              type: string
+
+  activation_targets:
+    description: Downstream systems for customer profile activation
+    type: array
+    items:
+      type: object
+      required: [target_id, target_type, connection_config]
+      properties:
+        target_id:
+          type: string
+        target_type:
+          type: string
+          enum: [crm, marketing_cloud, analytics, data_warehouse, reverse_etl, cdp]
+        connection_config:
+          type: object
+        audience_mapping:
+          type: object
+          description: Profile segments to audience mapping
+        sync_trigger:
+          type: string
+          enum: [realtime, near_realtime, batch]
+          default: batch
+
+  governance:
+    description: GDPR and data governance configuration
+    type: object
+    properties:
+      consent_required:
+        type: array
+        items:
+          type: string
+          description: Purposes requiring explicit consent
+      gdpr_deletion_policy:
+        type: object
+        properties:
+          retention_days:
+            type: integer
+            minimum: 0
+          anonymization_approach:
+            type: string
+            enum: [delete, anonymize, pseudonymize]
+      pii_fields:
+        type: array
+        items:
+          type: string
+        description: List of PII field names across all sources
+
+  quality_thresholds:
+    description: Data quality acceptance thresholds
+    type: object
+    properties:
+      profile_completeness:
+        type: number
+        minimum: 0
+        maximum: 1
+        default: 0.8
+      identity_resolution_accuracy:
+        type: number
+        minimum: 0
+        maximum: 1
+        default: 0.95
+      max_duplicate_rate:
+        type: number
+        minimum: 0
+        maximum: 1
+        default: 0.05

@@ -1,0 +1,40 @@
+version: '3.8'
+services:
+  cdp-orchestrator:
+    image: cdp/orchestrator:latest
+    ports: ["8080:8080"]
+    environment:
+      KAFKA_BROKERS: "kafka:9092"
+      SNOWFLAKE_ACCOUNT: "${SNOWFLAKE_ACCOUNT}"
+      IDENTITY_ENGINE: "liveramp"
+    depends_on: [kafka]
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    environment:
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: "1"
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "1"
+    ports: ["9092:9092"]
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+
+  schema-registry:
+    image: confluentinc/cp-schema-registry:7.5.0
+    ports: ["8081:8081"]
+    environment:
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "kafka:9092"
+      SCHEMA_REGISTRY_HOST_NAME: "schema-registry"
+      SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8081"
+    depends_on: [kafka]
+
+  cdp-activator:
+    image: cdp/activator:latest
+    ports: ["8082:8082"]
+    environment:
+      KAFKA_BROKERS: "kafka:9092"
+      WAREHOUSE_URL: "${WAREHOUSE_URL}"
+    depends_on: [kafka]
+
+volumes:
+  kafka-data:

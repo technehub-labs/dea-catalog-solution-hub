@@ -1,0 +1,77 @@
+id: dea:archetype-api-gateway
+type: SolutionComponent
+name: API Gateway Archetype
+abbreviation: API Gateway Archetype
+version: "1.0.0"
+status: active
+description: >
+  Canonical delivery archetype for implementing an API Gateway. Covers request routing,
+  rate limiting, authentication, authorization, request/response transformation,
+  service discovery, and circuit breaker patterns for protecting backend services.
+archetype_class: integration
+complexity: medium
+delivery_sprints: 6
+team_size: 3-4
+
+patterns_applied:
+  - dea:pattern-api-gateway
+  - dea:pattern-circuit-breaker
+  - dea:pattern-strangler-fig
+
+services_realised:
+  - dea:service-customer-360
+
+capabilities_enabled:
+  - dea:capability-api-management
+  - dea:capability-service-orchestration
+
+infrastructure_requirements:
+  - Gateway: Kong / Apigee / AWS API Gateway / Azure API Management
+  - Runtime: Kubernetes (EKS/AKS/GKE)
+  - Auth: OIDC/OAuth2 provider (Keycloak / Auth0 / Okta)
+  - Monitoring: Prometheus / Grafana / Datadog
+
+delivery_phases:
+  - phase: Foundation
+    sprints: 1-2
+    focus: Gateway setup, base routing, authentication layer
+  - phase: Build
+    sprints: 3-4
+    focus: Advanced routing, rate limiting, circuit breaker, service discovery
+  - phase: Harden
+    sprint: 5
+    focus: Performance testing, security review, chaos engineering
+  - phase: Launch
+    sprint: 6
+    focus: Traffic migration, UAT, monitoring dashboards, cutover
+
+exit_criteria:
+  - P99 latency < 50ms for cached routes
+  - Circuit breaker triggers correctly under load
+  - All routes secured with OAuth2 or API key
+  - Zero-downtime deployment verified
+
+governance_checkpoints:
+  - Architecture review gate (end of Foundation)
+  - Security review gate (end of Build)
+  - UAT sign-off gate (before Launch)
+
+relationships:
+  - source_id: dea:archetype-api-gateway
+    target_id: dea:pattern-api-gateway
+    relationship_type: applies_pattern
+  - source_id: dea:archetype-api-gateway
+    target_id: dea:pattern-circuit-breaker
+    relationship_type: applies_pattern
+  - source_id: dea:archetype-api-gateway
+    target_id: dea:pattern-strangler-fig
+    relationship_type: applies_pattern
+  - source_id: dea:archetype-api-gateway
+    target_id: dea:service-customer-360
+    relationship_type: implements_service
+
+tags:
+  - solution-archetype
+  - integration
+  - api-gateway
+  - routing

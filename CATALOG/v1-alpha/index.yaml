@@ -1,0 +1,37 @@
+release:
+  id: v1-alpha
+  version: "1.0.0"
+  status: active
+  label: "v1-alpha"
+  description: >
+    Initial alpha release of Solution Hub. Provides 6 solution archetypes,
+    2 delivery templates, 2 implementation accelerators, and 3 integration guides.
+  released: "2026-01-15"
+
+  archetypes:
+    - file: archetypes/customer-data-platform.yaml
+    - file: archetypes/api-gateway-archetype.yaml
+    - file: archetypes/event-streaming-hub.yaml
+    - file: archetypes/identity-provider.yaml
+    - file: archetypes/workflow-engine.yaml
+    - file: archetypes/analytics-pipeline.yaml
+
+  delivery_templates:
+    - file: delivery-templates/customer-data-platform-delivery.yaml
+    - file: delivery-templates/api-gateway-delivery.yaml
+
+  accelerators:
+    customer-data-platform:
+      - file: ../../../accelerators/customer-data-platform/docker-compose.yaml
+      - file: ../../../accelerators/customer-data-platform/infrastructure.tf
+      - file: ../../../accelerators/customer-data-platform/config-schema.yaml
+    api-gateway:
+      - file: ../../../accelerators/api-gateway/kong-config.yaml
+      - file: ../../../accelerators/api-gateway/service-routing.yaml
+
+  integration_guides:
+    - file: ../../../integration-guides/erp-integration.yaml
+    - file: ../../../integration-guides/crm-integration.yaml
+    - file: ../../../integration-guides/data-warehouse-integration.yaml
+
+  viewpoints_file: ../../../viewpoints/stakeholder-views.yaml
