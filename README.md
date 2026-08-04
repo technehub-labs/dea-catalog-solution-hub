@@ -4,7 +4,7 @@
 
 [![Layer: L1](https://img.shields.io/badge/Layer-L1%20—%20Reference%20Catalogs-8b5cf6?style=flat-square)](https://github.com/technehub-labs/dea-metamodel)
 [![Status: Alpha](https://img.shields.io/badge/Status-Alpha-FF6B35?style=flat-square)](./)
-[![License: MIT](https://img.shields.io/badge/License-MIT-44CC11?style=flat-square)](LICENSE)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue?style=flat-square)](LICENSE)
 
 ---
 
@@ -242,4 +242,4 @@ dea generate --template implementation-scaffold --id dea:archetype-customer-data
 
 ## License
 
-MIT License — see [LICENSE](./LICENSE)
+Apache 2.0 — see [LICENSE](./LICENSE).
